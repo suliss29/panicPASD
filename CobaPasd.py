@@ -3,7 +3,6 @@ import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
-from streamlit_option_menu import option_menu
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -377,15 +376,15 @@ plt.tight_layout()
 plt.show()
 
 headerSection = st.container()
-with st.sidebar:
-    selected = option_menu ("Menu", ["Visualization", "Machine Learning"])
 
-if (selected == "Visualization") :
-    st.title("Visualisasi Data")
+selected = st.sidebar.radio("Menu", ["Visualization", "Machine Learning"])
+
+if selected == "Visualization":
+    st.title("Visualization Menu")
 
     option = st.selectbox(
     'Pilih Variable',
-    ('Age','Gender','Family History','Personal History','Current Stressors','Symptoms','Severity','Impact on Life','Demographics','Medical History','Psychiatric History','Substance Use','Coping Mechanisms','Social Support','Lifestyle Factors','Panic Disorder Diagnosis'))
+    ('Age','Gender','Family History','Personal History','Coping Mechanisms','Current Stressors','Symptoms','Severity','Impact on Life','Demographics','Medical History','Psychiatric History','Substance Use','Social Support','Lifestyle Factors','Panic Disorder Diagnosis'))
     if (option == "Age") :
         
         st.title('Perbandingan Usia')
@@ -408,7 +407,35 @@ if (selected == "Visualization") :
         # Menampilkan plot
         plt.tight_layout()
         st.pyplot(fig)
-  
+
+        # Daftar panic disorder diagnosis unik
+        panic_diagnoses = df['Panic Disorder Diagnosis'].unique()
+
+        # Mengganti nilai panic disorder diagnosis menjadi string
+        panic_diagnoses_text = ["Tidak Terkena Penyakit" if d == 0 else "Terkena Penyakit" for d in panic_diagnoses]
+
+        # Pilihan panic disorder diagnosis
+        selected_diagnosis = st.selectbox("Pilih Panic Disorder Diagnosis", panic_diagnoses_text)
+
+        # Menggabungkan data berdasarkan panic disorder diagnosis yang dipilih
+        selected_data = df[df['Panic Disorder Diagnosis'] == (0 if selected_diagnosis == "Tidak Terkena Penyakit" else 1)]
+
+        # Menghitung jumlah setiap kategori usia berdasarkan panic disorder diagnosis yang dipilih
+        age_counts = selected_data['Age'].value_counts().reset_index()
+        age_counts.columns = ['Kategori Usia', 'Jumlah']
+        age_counts['Kategori Usia'] = age_counts['Kategori Usia'].astype(str)  # Mengonversi ke tipe string
+
+        # Menampilkan hasil di Streamlit
+        st.subheader("Jumlah Setiap Kategori Usia berdasarkan Panic Disorder Diagnosis: " + selected_diagnosis)
+        st.dataframe(age_counts)
+            # Visualisasi dalam bentuk barchart
+        fig, ax = plt.subplots()
+        ax.bar(age_counts['Kategori Usia'], age_counts['Jumlah'])
+        ax.set_xlabel('Usia')
+        ax.set_ylabel('Jumlah')
+        ax.set_title('Jumlah Setiap Kategori Usia')
+        st.pyplot(fig)
+        
     elif (option == "Gender") :
         
         st.title('Perbandingan Gender')
@@ -427,12 +454,42 @@ if (selected == "Visualization") :
         ax2.set_xlabel('Gender')
         ax2.set_ylabel('Count')
         ax2.set_title('Gender Comparison')
-
-
+        
         # Menampilkan plot
         plt.tight_layout()
         st.pyplot(fig)
         
+        # Daftar panic disorder diagnosis unik
+        panic_diagnoses = df['Panic Disorder Diagnosis'].unique()
+
+        # Mengganti nilai panic disorder diagnosis menjadi string
+        panic_diagnoses_text = ["Tidak Terkena Penyakit" if d == 0 else "Terkena Penyakit" for d in panic_diagnoses]
+
+        # Pilihan panic disorder diagnosis
+        selected_diagnosis = st.selectbox("Pilih Panic Disorder Diagnosis", panic_diagnoses_text)
+
+        # Menggabungkan data berdasarkan panic disorder diagnosis yang dipilih
+        selected_data = df[df['Panic Disorder Diagnosis'] == (0 if selected_diagnosis == "Tidak Terkena Penyakit" else 1)]
+
+        # Menghitung jumlah setiap kategori gender
+        gender_counts = selected_data['Gender'].value_counts().reset_index()
+        gender_counts.columns = ['Gender', 'Jumlah']
+        gender_counts['Gender'] = ["Laki-laki" if g == "Male" else "Perempuan" for g in gender_counts['Gender']]  # Mengganti nilai gender menjadi string
+
+        # Menampilkan hasil di Streamlit
+        if not gender_counts.empty:
+            st.subheader("Jumlah Setiap Kategori Gender berdasarkan Panic Disorder Diagnosis: " + selected_diagnosis)
+            st.table(gender_counts)
+            # Visualisasi dalam bentuk barchart
+            fig, ax = plt.subplots()
+            ax.bar(gender_counts['Gender'], gender_counts['Jumlah'])
+            ax.set_xlabel('Gender')
+            ax.set_ylabel('Jumlah')
+            ax.set_title('Jumlah Setiap Kategori Gender')
+            st.pyplot(fig)
+        else:
+            st.subheader("Tidak ada data yang sesuai dengan pilihan yang dipilih.")
+                
     elif (option == "Family History") :
         st.title ('Family History Comparison')
         history_count = df['Family History'].value_counts()
@@ -454,6 +511,39 @@ if (selected == "Visualization") :
         # Menampilkan plot
         plt.tight_layout()
         st.pyplot(fig)
+        
+        
+        # Daftar panic disorder diagnosis unik
+        panic_diagnoses = df['Panic Disorder Diagnosis'].unique()
+
+        # Mengganti nilai panic disorder diagnosis menjadi string
+        panic_diagnoses_text = ["Tidak Terkena Penyakit" if d == 0 else "Terkena Penyakit" for d in panic_diagnoses]
+
+        # Pilihan panic disorder diagnosis
+        selected_diagnosis = st.selectbox("Pilih Panic Disorder Diagnosis", panic_diagnoses_text)
+
+        # Menggabungkan data berdasarkan panic disorder diagnosis yang dipilih
+        selected_data = df[df['Panic Disorder Diagnosis'] == (0 if selected_diagnosis == "Tidak Terkena Penyakit" else 1)]
+
+        # Menghitung jumlah setiap kategori family history
+        family_history_counts = selected_data['Family History'].value_counts().reset_index()
+        family_history_counts.columns = ['Family History', 'Jumlah']
+        family_history_counts['Family History'] = ["Tidak" if f == "No" else "Ya" for f in family_history_counts['Family History']]  # Mengganti nilai family history menjadi string
+
+        # Menampilkan hasil di Streamlit
+        if not family_history_counts.empty:
+            st.subheader("Jumlah Setiap Kategori Family History berdasarkan Panic Disorder Diagnosis: " + selected_diagnosis)
+            st.table(family_history_counts)
+
+            # Visualisasi dalam bentuk barchart
+            fig, ax = plt.subplots()
+            ax.bar(family_history_counts['Family History'], family_history_counts['Jumlah'])
+            ax.set_xlabel('Family History')
+            ax.set_ylabel('Jumlah')
+            ax.set_title('Jumlah Setiap Kategori Family History')
+            st.pyplot(fig)
+        else:
+            st.subheader("Tidak ada data yang sesuai dengan pilihan yang dipilih.")
     
     elif (option == "Personal History") :
         st.title ('Personal History Comparison')
@@ -476,7 +566,37 @@ if (selected == "Visualization") :
         # Menampilkan plot
         plt.tight_layout()
         st.pyplot(fig)
-        
+            # Daftar panic disorder diagnosis unik
+        panic_diagnoses = df['Panic Disorder Diagnosis'].unique()
+
+        # Mengganti nilai panic disorder diagnosis menjadi string
+        panic_diagnoses_text = ["Tidak Terkena Penyakit" if d == 0 else "Terkena Penyakit" for d in panic_diagnoses]
+
+        # Pilihan panic disorder diagnosis
+        selected_diagnosis = st.selectbox("Pilih Panic Disorder Diagnosis", panic_diagnoses_text)
+
+        # Menggabungkan data berdasarkan panic disorder diagnosis yang dipilih
+        selected_data = df[df['Panic Disorder Diagnosis'] == (0 if selected_diagnosis == "Tidak Terkena Penyakit" else 1)]
+
+        # Menghitung jumlah setiap kategori family history
+        personal_history_counts = selected_data['Personal History'].value_counts().reset_index()
+        personal_history_counts.columns = ['Personal History', 'Jumlah']
+        personal_history_counts['Personal History'] = ["Tidak" if f == "No" else "Ya" for f in personal_history_counts['Personal History']]  # Mengganti nilai family history menjadi string
+
+        # Menampilkan hasil di Streamlit
+        if not personal_history_counts.empty:
+            st.subheader("Jumlah Setiap Kategori Family History berdasarkan Panic Disorder Diagnosis: " + selected_diagnosis)
+            st.table(personal_history_counts)
+
+            # Visualisasi dalam bentuk barchart
+            fig, ax = plt.subplots()
+            ax.bar(personal_history_counts['Personal History'], personal_history_counts['Jumlah'])
+            ax.set_xlabel('Personal History')
+            ax.set_ylabel('Jumlah')
+            ax.set_title('Jumlah Setiap Kategori Personal History')
+            st.pyplot(fig)
+        else:
+            st.subheader("Tidak ada data yang sesuai dengan pilihan yang dipilih.")
     elif (option == "Current Stressors") :
         st.title ('Current Stressors Comparison')
         stressors_count = df['Current Stressors'].value_counts()
@@ -682,7 +802,36 @@ if (selected == "Visualization") :
         plt.tight_layout()
 
         st.pyplot(fig)
-        
+        # Daftar panic disorder diagnosis unik
+        panic_diagnoses = df['Panic Disorder Diagnosis'].unique()
+
+        # Mengganti nilai panic disorder diagnosis menjadi string
+        panic_diagnoses_text = ["Tidak Terkena Penyakit" if d == 0 else "Terkena Penyakit" for d in panic_diagnoses]
+
+        # Pilihan panic disorder diagnosis
+        selected_diagnosis = st.selectbox("Pilih Panic Disorder Diagnosis", panic_diagnoses_text)
+
+        # Menggabungkan data berdasarkan panic disorder diagnosis yang dipilih
+        selected_data = df[df['Panic Disorder Diagnosis'] == (0 if selected_diagnosis == "Tidak Terkena Penyakit" else 1)]
+
+        # Menghitung jumlah setiap kategori coping mechanism
+        coping_counts = selected_data['Coping Mechanisms'].value_counts().reset_index()
+        coping_counts.columns = ['Coping Mechanisms', 'Jumlah']
+
+        # Menampilkan hasil di Streamlit
+        if not coping_counts.empty:
+            st.subheader("Jumlah Setiap Kategori Coping Mechanism berdasarkan Panic Disorder Diagnosis: " + selected_diagnosis)
+            st.table(coping_counts)
+
+            # Visualisasi dalam bentuk barchart
+            fig, ax = plt.subplots()
+            ax.bar(coping_counts['Coping Mechanisms'], coping_counts['Jumlah'])
+            ax.set_xlabel('Coping Mechanisms')
+            ax.set_ylabel('Jumlah')
+            ax.set_title('Jumlah Setiap Kategori Coping Mechanism')
+            st.pyplot(fig)
+        else:
+            st.subheader("Tidak ada data yang sesuai dengan pilihan yang dipilih.")    
     elif (option == "Social Support") :
         st.title ('Social Support Comparison')
         sl_count = df['Social Support'].value_counts()
@@ -752,8 +901,8 @@ if (selected == "Visualization") :
 
         st.pyplot(fig)
     
-elif (selected == "Machine Learning") :
-    st.title("Machine Learning")
+elif selected == "Machine Learning":
+    st.title("Machine Learning Menu")
 # Pilihan metode Machine Learning
     variables = ['Age', 'Gender', 'Family History', 'Personal History', 'Current Stressors', 'Symptoms',
                 'Severity', 'Impact on Life', 'Demographics', 'Medical History', 'Psychiatric History',
