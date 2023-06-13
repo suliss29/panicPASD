@@ -6,4 +6,3 @@ matplotlib
 openpyxl
 seaborn
 scikit-learn
-streamlit_option_menu
