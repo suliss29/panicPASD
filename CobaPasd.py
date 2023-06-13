@@ -3,7 +3,6 @@ import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
-import plotly as pt
 from streamlit_option_menu import option_menu
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
